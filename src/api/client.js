@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-// Create Axios client with base URL pointing to /api (proxied) or full backend URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Create Axios client with base URL pointing to Render in production or local in dev
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.MODE === 'production'
+    ? 'https://uacc-eventhub-backend.onrender.com/api'
+    : 'http://localhost:5000/api');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
