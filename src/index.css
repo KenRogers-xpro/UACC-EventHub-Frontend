@@ -1084,40 +1084,125 @@ a {
 input, textarea, select {
   width: 100%;
   background: var(--bg-input);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   color: var(--text-white);
   font-family: var(--font-family);
   font-size: 0.92rem;
-  transition: background 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+input:hover, textarea:hover, select:hover {
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
   background: var(--bg-surface-elevated);
+  border-color: var(--red-primary);
+  box-shadow: 0 0 0 2px var(--red-subtle);
 }
 
-input::placeholder, textarea::placeholder {
-  color: #52525B;
+/* Date and Time Picker Indicators (visible in dark mode) */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  color-scheme: dark;
+  cursor: pointer;
 }
 
-.helper-text {
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.85);
+  opacity: 0.85;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(1);
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Image Upload Dropzone & Previews */
+.image-upload-dropzone {
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-lg);
+  background: var(--bg-input);
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.image-upload-dropzone:hover {
+  border-color: var(--red-primary);
+  background: var(--bg-surface-elevated);
+}
+
+.image-upload-dropzone .upload-icon {
+  font-size: 1.5rem;
+  color: var(--red-primary);
+  font-weight: 700;
+}
+
+.image-upload-dropzone .upload-prompt {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-white);
+}
+
+.image-upload-dropzone .upload-hint {
   font-size: 0.78rem;
   color: var(--text-muted);
 }
 
-.form-actions {
+.image-preview-card {
+  position: relative;
+  background: var(--bg-surface-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin-top: 0.75rem;
   display: flex;
-  justify-content: flex-end;
-  gap: 0.85rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .cover-preview-img {
   width: 100%;
-  max-height: 240px;
+  max-height: 280px;
   object-fit: cover;
   border-radius: var(--radius-md);
-  margin-top: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: block;
+}
+
+.preview-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.25rem;
+}
+
+.preview-badge-status {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
 }
 
 .back-link {

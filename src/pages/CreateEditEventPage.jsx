@@ -67,6 +67,37 @@ export default function CreateEditEventPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrors(['Please select an image file (PNG, JPG, JPEG, WebP)']);
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setErrors(['Image size must be less than 8MB']);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      setFormData((prev) => ({
+        ...prev,
+        cover_image_url: loadEvent.target.result,
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      cover_image_url: '',
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = [];
@@ -194,6 +225,7 @@ export default function CreateEditEventPage() {
                 type="date"
                 value={formData.event_date}
                 onChange={handleChange}
+                onClick={(e) => e.target.showPicker && e.target.showPicker()}
                 required
               />
             </div>
@@ -242,42 +274,88 @@ export default function CreateEditEventPage() {
         <div className="form-section">
           <h2 className="section-title">RSVP Deadline</h2>
           <div className="form-group">
-            <label htmlFor="event-rsvp-deadline">RSVP Deadline *</label>
+            <label htmlFor="event-rsvp-deadline">RSVP Deadline (Date & Time) *</label>
             <input
               id="event-rsvp-deadline"
               name="rsvp_deadline"
               type="datetime-local"
               value={formData.rsvp_deadline}
               onChange={handleChange}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
               required
             />
             <small className="helper-text">
-              Must be prior to the event date. Guests cannot respond after this cutoff.
+              Specify cutoff date and time. Must be prior to event date. Guests cannot respond after this cutoff.
             </small>
           </div>
         </div>
 
         <div className="form-section">
-          <h2 className="section-title">Media</h2>
-          <div className="form-group">
-            <label htmlFor="event-cover-url">Cover Image URL</label>
-            <input
-              id="event-cover-url"
-              name="cover_image_url"
-              type="url"
-              placeholder="https://..."
-              value={formData.cover_image_url}
-              onChange={handleChange}
-            />
-          </div>
+          <h2 className="section-title">Media & Cover Image</h2>
 
-          {formData.cover_image_url && (
-            <div className="image-preview-container">
+          {!formData.cover_image_url ? (
+            <div>
+              <label
+                htmlFor="cover-file-upload"
+                className="image-upload-dropzone"
+                id="dropzone-cover-upload"
+              >
+                <span className="upload-icon">📷</span>
+                <span className="upload-prompt">Click to upload event cover photo</span>
+                <span className="upload-hint">Supports JPEG, PNG, WebP (Max 8MB)</span>
+                <input
+                  id="cover-file-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageFileChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
+
+              <div className="form-group" style={{ marginTop: '1rem' }}>
+                <label htmlFor="event-cover-url">Or paste Image URL</label>
+                <input
+                  id="event-cover-url"
+                  name="cover_image_url"
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={formData.cover_image_url}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="image-preview-card" id="cover-preview-card">
               <img
                 src={formData.cover_image_url}
-                alt="Event cover"
+                alt="Event cover preview"
                 className="cover-preview-img"
               />
+              <div className="preview-actions-bar">
+                <span className="preview-badge-status">
+                  {formData.cover_image_url.startsWith('data:') ? 'Local Image File Attached' : 'Image URL Attached'}
+                </span>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <label htmlFor="cover-file-change" className="btn btn-outline btn-xs" style={{ cursor: 'pointer' }}>
+                    Replace Photo
+                    <input
+                      id="cover-file-change"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="btn btn-danger-outline btn-xs"
+                    id="btn-remove-cover-image"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
