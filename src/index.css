@@ -799,6 +799,17 @@ a {
   margin-bottom: 1.5rem;
 }
 
+.card-header-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.card-header-with-action .card-subheading {
+  margin-bottom: 0;
+}
+
 .card-subheading {
   font-size: 0.95rem;
   color: var(--text-white);
@@ -806,6 +817,15 @@ a {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.animate-fade-in {
+  animation: fadeInModal 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .guest-inline-form {
@@ -896,56 +916,75 @@ a {
 /* Materials Widescreen Grid */
 .materials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: 1.25rem;
+  width: 100%;
 }
 
 .material-card {
   background: var(--bg-surface);
-  border-radius: var(--radius-md);
-  padding: 1.15rem;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.6rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  min-height: 84px;
+}
+
+.material-card:hover {
+  background: var(--bg-surface-elevated);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
 }
 
 .material-icon-box {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   background: var(--bg-surface-elevated);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--text-white);
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .material-info {
   flex: 1;
-  overflow: hidden;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .material-name {
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   color: var(--text-white);
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.01em;
 }
 
 .material-meta {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .material-actions {
   display: flex;
-  gap: 0.4rem;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
 }
 
 .btn-icon {

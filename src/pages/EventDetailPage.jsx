@@ -13,6 +13,7 @@ export default function EventDetailPage() {
   const [errorMsg, setErrorMsg] = useState('');
 
   // Add Guest Form State
+  const [showAddGuest, setShowAddGuest] = useState(false);
   const [guestForm, setGuestForm] = useState({ name: '', email: '', phone: '' });
   const [addingGuest, setAddingGuest] = useState(false);
   const [guestError, setGuestError] = useState('');
@@ -22,6 +23,21 @@ export default function EventDetailPage() {
   // Material Upload State
   const [uploadingMaterial, setUploadingMaterial] = useState(false);
   const [materialError, setMaterialError] = useState('');
+
+  const formatFileSize = (kb) => {
+    if (!kb || isNaN(kb)) return '0 KB';
+    const num = parseFloat(kb);
+    if (num >= 1024) {
+      return `${(num / 1024).toFixed(2)} MB`;
+    }
+    return `${Math.round(num)} KB`;
+  };
+
+  const getFileTypeBadge = (fileName, fileType) => {
+    if (fileType) return fileType.toUpperCase().slice(0, 4);
+    const ext = fileName?.split('.').pop();
+    return ext ? ext.toUpperCase().slice(0, 4) : 'DOC';
+  };
 
   const fetchEventData = async () => {
     setLoading(true);
@@ -289,85 +305,118 @@ export default function EventDetailPage() {
               Add attendees to generate distinct, private invitation links.
             </p>
           </div>
+
+          <button
+            id="btn-toggle-add-guest"
+            onClick={() => {
+              setShowAddGuest((prev) => !prev);
+              setGuestError('');
+            }}
+            className={showAddGuest ? "btn btn-outline btn-sm" : "btn btn-primary btn-sm"}
+          >
+            {showAddGuest ? '✕ Close Form' : '+ Add Attendee'}
+          </button>
         </div>
 
-        <div className="add-guest-card">
-          <h3 className="card-subheading">Add Attendee</h3>
-
-          {guestError && (
-            <div className="alert alert-error" role="alert">
-              <span>{guestError}</span>
+        {showAddGuest && (
+          <div className="add-guest-card animate-fade-in" id="add-guest-container">
+            <div className="card-header-with-action">
+              <h3 className="card-subheading">New Attendee Registration</h3>
+              <button
+                type="button"
+                className="btn-ghost btn-xs"
+                onClick={() => setShowAddGuest(false)}
+                title="Close form"
+              >
+                ✕
+              </button>
             </div>
-          )}
 
-          <form onSubmit={handleAddGuest} className="guest-inline-form" id="add-guest-form">
-            <input
-              id="guest-name-input"
-              type="text"
-              placeholder="Full Name *"
-              value={guestForm.name}
-              onChange={(e) => setGuestForm({ ...guestForm, name: e.target.value })}
-              required
-            />
+            {guestError && (
+              <div className="alert alert-error" role="alert">
+                <span>{guestError}</span>
+              </div>
+            )}
 
-            <input
-              id="guest-email-input"
-              type="email"
-              placeholder="Email Address"
-              value={guestForm.email}
-              onChange={(e) => setGuestForm({ ...guestForm, email: e.target.value })}
-            />
+            <form onSubmit={handleAddGuest} className="guest-inline-form" id="add-guest-form">
+              <input
+                id="guest-name-input"
+                type="text"
+                placeholder="Full Name *"
+                value={guestForm.name}
+                onChange={(e) => setGuestForm({ ...guestForm, name: e.target.value })}
+                required
+              />
 
-            <input
-              id="guest-phone-input"
-              type="tel"
-              placeholder="Phone (Optional)"
-              value={guestForm.phone}
-              onChange={(e) => setGuestForm({ ...guestForm, phone: e.target.value })}
-            />
+              <input
+                id="guest-email-input"
+                type="email"
+                placeholder="Email Address"
+                value={guestForm.email}
+                onChange={(e) => setGuestForm({ ...guestForm, email: e.target.value })}
+              />
 
-            <button
-              type="submit"
-              id="btn-add-guest"
-              className="btn btn-primary"
-              disabled={addingGuest}
-            >
-              {addingGuest ? 'Adding...' : 'Add Guest'}
-            </button>
-          </form>
+              <input
+                id="guest-phone-input"
+                type="tel"
+                placeholder="Phone (Optional)"
+                value={guestForm.phone}
+                onChange={(e) => setGuestForm({ ...guestForm, phone: e.target.value })}
+              />
 
-          {latestInviteLink && (
-            <div className="invite-link-banner" id="newly-created-link-box">
-              <div className="invite-link-info">
-                <div>
-                  <span className="meta-sub">Generated Invitation Link:</span>
-                  <p className="invite-url-text">{latestInviteLink}</p>
+              <button
+                type="submit"
+                id="btn-add-guest"
+                className="btn btn-primary"
+                disabled={addingGuest}
+              >
+                {addingGuest ? 'Adding...' : 'Add Guest'}
+              </button>
+            </form>
+
+            {latestInviteLink && (
+              <div className="invite-link-banner" id="newly-created-link-box">
+                <div className="invite-link-info">
+                  <div>
+                    <span className="meta-sub">Generated Invitation Link:</span>
+                    <p className="invite-url-text">{latestInviteLink}</p>
+                  </div>
+                </div>
+                <div className="banner-actions">
+                  <button
+                    onClick={() => handleCopyLink(latestInviteLink, 'latest')}
+                    className="btn btn-sm btn-outline"
+                    id="btn-copy-latest-link"
+                  >
+                    {copiedId === 'latest' ? 'Copied' : 'Copy Link'}
+                  </button>
+                  <a
+                    href={latestInviteLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-sm btn-outline"
+                  >
+                    Preview
+                  </a>
                 </div>
               </div>
-              <div className="banner-actions">
-                <button
-                  onClick={() => handleCopyLink(latestInviteLink, 'latest')}
-                  className="btn btn-sm btn-outline"
-                  id="btn-copy-latest-link"
-                >
-                  {copiedId === 'latest' ? 'Copied' : 'Copy Link'}
-                </button>
-                <a
-                  href={latestInviteLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn btn-sm btn-outline"
-                >
-                  Preview
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {guests.length === 0 ? (
           <div className="empty-substate">
-            No guests registered for this event yet.
+            <p>No guests registered for this event yet.</p>
+            {!showAddGuest && (
+              <button
+                id="btn-add-first-guest"
+                onClick={() => setShowAddGuest(true)}
+                className="btn btn-primary btn-sm"
+                style={{ marginTop: '0.85rem' }}
+              >
+                + Add First Attendee
+              </button>
+            )}
           </div>
         ) : (
           <div className="table-responsive">
@@ -479,38 +528,41 @@ export default function EventDetailPage() {
           </div>
         ) : (
           <div className="materials-grid">
-            {materials.map((item) => (
-              <div key={item.id} className="material-card" id={`material-card-${item.id}`}>
-                <div className="material-icon-box">DOC</div>
-                <div className="material-info">
-                  <h4 className="material-name" title={item.file_name}>
-                    {item.file_name}
-                  </h4>
-                  <span className="material-meta">
-                    {item.file_type?.toUpperCase()} • {item.file_size_kb || 0} KB
-                  </span>
+            {materials.map((item) => {
+              const badge = getFileTypeBadge(item.file_name, item.file_type);
+              return (
+                <div key={item.id} className="material-card" id={`material-card-${item.id}`}>
+                  <div className="material-icon-box">{badge}</div>
+                  <div className="material-info">
+                    <h4 className="material-name" title={item.file_name}>
+                      {item.file_name}
+                    </h4>
+                    <span className="material-meta">
+                      {badge} • {formatFileSize(item.file_size_kb)}
+                    </span>
+                  </div>
+                  <div className="material-actions">
+                    <a
+                      href={item.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      download
+                      className="btn btn-sm btn-outline"
+                    >
+                      Download
+                    </a>
+                    <button
+                      id={`btn-delete-material-${item.id}`}
+                      onClick={() => handleDeleteMaterial(item.id, item.file_name)}
+                      className="btn-icon-danger"
+                      title="Delete file"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
-                <div className="material-actions">
-                  <a
-                    href={item.file_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    download
-                    className="btn btn-xs btn-outline"
-                  >
-                    Download
-                  </a>
-                  <button
-                    id={`btn-delete-material-${item.id}`}
-                    onClick={() => handleDeleteMaterial(item.id, item.file_name)}
-                    className="btn-icon-danger"
-                    title="Delete file"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

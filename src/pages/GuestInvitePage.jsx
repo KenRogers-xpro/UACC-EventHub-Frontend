@@ -139,6 +139,21 @@ export default function GuestInvitePage() {
     }
   };
 
+  const formatFileSize = (kb) => {
+    if (!kb || isNaN(kb)) return '0 KB';
+    const num = parseFloat(kb);
+    if (num >= 1024) {
+      return `${(num / 1024).toFixed(2)} MB`;
+    }
+    return `${Math.round(num)} KB`;
+  };
+
+  const getFileTypeBadge = (fileName, fileType) => {
+    if (fileType) return fileType.toUpperCase().slice(0, 4);
+    const ext = fileName?.split('.').pop();
+    return ext ? ext.toUpperCase().slice(0, 4) : 'DOC';
+  };
+
   if (loading) {
     return (
       <div className="invite-page-container">
@@ -371,27 +386,30 @@ export default function GuestInvitePage() {
                   </p>
                 ) : (
                   <div className="guest-materials-list">
-                    {materials.map((m) => (
-                      <div key={m.id} className="guest-material-card">
-                        <div className="material-left">
-                          <div>
-                            <span className="file-title">{m.file_name}</span>
-                            <span className="file-meta">
-                              {m.file_type?.toUpperCase()} • {m.file_size_kb || 0} KB
-                            </span>
+                    {materials.map((m) => {
+                      const badge = getFileTypeBadge(m.file_name, m.file_type);
+                      return (
+                        <div key={m.id} className="guest-material-card">
+                          <div className="material-left">
+                            <div>
+                              <span className="file-title">{m.file_name}</span>
+                              <span className="file-meta">
+                                {badge} • {formatFileSize(m.file_size_kb)}
+                              </span>
+                            </div>
                           </div>
+                          <a
+                            href={m.file_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            download
+                            className="btn btn-sm btn-outline"
+                          >
+                            Download
+                          </a>
                         </div>
-                        <a
-                          href={m.file_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          download
-                          className="btn btn-xs btn-outline"
-                        >
-                          Download
-                        </a>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
