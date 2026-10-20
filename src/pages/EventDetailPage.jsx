@@ -1,27 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { eventsAPI, inviteesAPI, materialsAPI } from '../api/client';
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Tag,
-  ArrowLeft,
-  Edit,
-  Trash2,
-  UserPlus,
-  Users,
-  Copy,
-  Check,
-  Upload,
-  FileText,
-  Download,
-  AlertCircle,
-  ExternalLink,
-  CheckCircle2,
-  XCircle,
-  HelpCircle,
-} from 'lucide-react';
 
 export default function EventDetailPage() {
   const { id: eventId } = useParams();
@@ -38,7 +17,7 @@ export default function EventDetailPage() {
   const [addingGuest, setAddingGuest] = useState(false);
   const [guestError, setGuestError] = useState('');
   const [latestInviteLink, setLatestInviteLink] = useState('');
-  const [copiedToken, setCopiedToken] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
   // Material Upload State
   const [uploadingMaterial, setUploadingMaterial] = useState(false);
@@ -64,7 +43,6 @@ export default function EventDetailPage() {
     fetchEventData();
   }, [eventId]);
 
-  // Guest Management: Add Invitee
   const handleAddGuest = async (e) => {
     e.preventDefault();
     if (!guestForm.name.trim()) {
@@ -88,9 +66,8 @@ export default function EventDetailPage() {
     }
   };
 
-  // Guest Management: Remove Invitee
   const handleRemoveGuest = async (inviteeId, guestName) => {
-    if (window.confirm(`Are you sure you want to remove ${guestName} from the guest list?`)) {
+    if (window.confirm(`Remove ${guestName} from guest list?`)) {
       try {
         await inviteesAPI.remove(inviteeId);
         setGuests((prev) => prev.filter((g) => g.id !== inviteeId));
@@ -100,17 +77,15 @@ export default function EventDetailPage() {
     }
   };
 
-  // Copy invitation link helper
   const handleCopyLink = (tokenOrLink, id) => {
     const link = tokenOrLink.startsWith('http')
       ? tokenOrLink
       : `${window.location.origin}/invite/${tokenOrLink}`;
     navigator.clipboard.writeText(link);
-    setCopiedToken(id || 'latest');
-    setTimeout(() => setCopiedToken(null), 2500);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Materials: Upload File
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -123,16 +98,15 @@ export default function EventDetailPage() {
         setMaterials((prev) => [res.material, ...prev]);
       }
     } catch (err) {
-      setMaterialError(err.response?.data?.message || 'Failed to upload material');
+      setMaterialError(err.response?.data?.message || 'Upload failed');
     } finally {
       setUploadingMaterial(false);
       e.target.value = '';
     }
   };
 
-  // Materials: Delete File
   const handleDeleteMaterial = async (materialId, fileName) => {
-    if (window.confirm(`Delete file "${fileName}"?`)) {
+    if (window.confirm(`Delete document "${fileName}"?`)) {
       try {
         await materialsAPI.delete(materialId);
         setMaterials((prev) => prev.filter((m) => m.id !== materialId));
@@ -142,13 +116,8 @@ export default function EventDetailPage() {
     }
   };
 
-  // Delete Entire Event
   const handleDeleteEvent = async () => {
-    if (
-      window.confirm(
-        'Are you sure you want to delete this event? This will permanently delete all guest RSVPs and materials.'
-      )
-    ) {
+    if (window.confirm('Delete this event? This will remove all associated invitees and materials.')) {
       try {
         await eventsAPI.delete(eventId);
         navigate('/dashboard');
@@ -162,9 +131,9 @@ export default function EventDetailPage() {
     if (!dateStr) return '';
     try {
       return new Intl.DateTimeFormat('en-GB', {
-        weekday: 'long',
+        weekday: 'short',
         day: '2-digit',
-        month: 'long',
+        month: 'short',
         year: 'numeric',
       }).format(new Date(dateStr));
     } catch {
@@ -189,7 +158,7 @@ export default function EventDetailPage() {
       <div className="page-container">
         <div className="spinner-wrapper">
           <div className="spinner"></div>
-          <p>Loading event dashboard...</p>
+          <p>Loading event record...</p>
         </div>
       </div>
     );
@@ -199,17 +168,15 @@ export default function EventDetailPage() {
     return (
       <div className="page-container">
         <div className="alert alert-error" role="alert">
-          <AlertCircle size={20} />
           <span>{errorMsg || 'Event not found'}</span>
         </div>
-        <Link to="/dashboard" className="btn btn-primary">
-          Back to Events
+        <Link to="/dashboard" className="btn btn-outline">
+          Return to Events
         </Link>
       </div>
     );
   }
 
-  // Summary counts
   const totalInvited = guests.length;
   const totalAccepted = guests.filter((g) => g.status === 'accepted').length;
   const totalDeclined = guests.filter((g) => g.status === 'declined').length;
@@ -217,34 +184,30 @@ export default function EventDetailPage() {
 
   return (
     <div className="page-container event-detail-page">
-      {/* Navigation & Header */}
       <div className="detail-top-nav">
         <Link to="/dashboard" className="back-link">
-          <ArrowLeft size={18} />
-          <span>Back to All Events</span>
+          ← Back to Events
         </Link>
 
         <div className="detail-actions">
           <button
             onClick={() => navigate(`/events/${eventId}/edit`)}
-            className="btn btn-outline"
+            className="btn btn-outline btn-sm"
             id="btn-edit-event"
           >
-            <Edit size={16} />
-            <span>Edit Event</span>
+            Edit Event
           </button>
           <button
             onClick={handleDeleteEvent}
-            className="btn btn-danger-outline"
+            className="btn btn-danger-outline btn-sm"
             id="btn-delete-event"
           >
-            <Trash2 size={16} />
-            <span>Delete</span>
+            Delete
           </button>
         </div>
       </div>
 
-      {/* Main Event Showcase Banner */}
+      {/* Main Event Showcase */}
       <div className="event-hero-card">
         {event.cover_image_url && (
           <div
@@ -254,12 +217,9 @@ export default function EventDetailPage() {
         )}
         <div className="event-hero-content">
           <div className="hero-tags">
-            <span className="badge badge-uacc">Uganda Air Cargo Corporation</span>
+            <span className="badge badge-uacc">UACC Corporate</span>
             {event.dress_code && (
-              <span className="badge badge-tag">
-                <Tag size={12} />
-                {event.dress_code}
-              </span>
+              <span className="badge badge-tag">{event.dress_code}</span>
             )}
           </div>
 
@@ -268,7 +228,6 @@ export default function EventDetailPage() {
 
           <div className="hero-details-row">
             <div className="hero-meta-box">
-              <Calendar size={18} className="meta-icon" />
               <div>
                 <span className="meta-sub">Event Date</span>
                 <strong>{formatDate(event.event_date)}</strong>
@@ -277,7 +236,6 @@ export default function EventDetailPage() {
 
             {event.event_time && (
               <div className="hero-meta-box">
-                <Clock size={18} className="meta-icon" />
                 <div>
                   <span className="meta-sub">Time</span>
                   <strong>{event.event_time}</strong>
@@ -286,7 +244,6 @@ export default function EventDetailPage() {
             )}
 
             <div className="hero-meta-box">
-              <MapPin size={18} className="meta-icon" />
               <div>
                 <span className="meta-sub">Venue</span>
                 <strong>{event.venue}</strong>
@@ -294,7 +251,6 @@ export default function EventDetailPage() {
             </div>
 
             <div className="hero-meta-box highlight-deadline">
-              <Clock size={18} className="meta-icon text-gold" />
               <div>
                 <span className="meta-sub">RSVP Cutoff</span>
                 <strong>{formatDeadline(event.rsvp_deadline)}</strong>
@@ -310,43 +266,33 @@ export default function EventDetailPage() {
           <span className="stat-label">Total Invited</span>
           <span className="stat-num">{totalInvited}</span>
         </div>
-        <div className="stat-divider" />
-        <div className="stat-item text-green">
+        <div className="stat-item">
           <span className="stat-label">Accepted</span>
           <span className="stat-num">{totalAccepted}</span>
         </div>
-        <div className="stat-divider" />
-        <div className="stat-item text-red">
+        <div className="stat-item">
           <span className="stat-label">Declined</span>
           <span className="stat-num">{totalDeclined}</span>
         </div>
-        <div className="stat-divider" />
-        <div className="stat-item text-muted">
+        <div className="stat-item">
           <span className="stat-label">Pending</span>
           <span className="stat-num">{totalPending}</span>
         </div>
       </div>
 
-      {/* SECTION: Guest Management (Section 7.5) */}
+      {/* Guest Management Section */}
       <section className="detail-section">
         <div className="section-header-row">
           <div>
-            <h2 className="section-title">
-              <Users size={20} />
-              <span>Guest List & RSVP Tracking</span>
-            </h2>
+            <h2 className="section-title">Guest List & Attendance</h2>
             <p className="section-subtitle">
-              Add VIP attendees to generate individual, tamper-proof private invitation links.
+              Add attendees to generate distinct, private invitation links.
             </p>
           </div>
         </div>
 
-        {/* Add Guest Form */}
         <div className="add-guest-card">
-          <h3 className="card-subheading">
-            <UserPlus size={16} />
-            <span>Add New Attendee</span>
-          </h3>
+          <h3 className="card-subheading">Add Attendee</h3>
 
           {guestError && (
             <div className="alert alert-error" role="alert">
@@ -355,36 +301,30 @@ export default function EventDetailPage() {
           )}
 
           <form onSubmit={handleAddGuest} className="guest-inline-form" id="add-guest-form">
-            <div className="input-group">
-              <input
-                id="guest-name-input"
-                type="text"
-                placeholder="Full Name *"
-                value={guestForm.name}
-                onChange={(e) => setGuestForm({ ...guestForm, name: e.target.value })}
-                required
-              />
-            </div>
+            <input
+              id="guest-name-input"
+              type="text"
+              placeholder="Full Name *"
+              value={guestForm.name}
+              onChange={(e) => setGuestForm({ ...guestForm, name: e.target.value })}
+              required
+            />
 
-            <div className="input-group">
-              <input
-                id="guest-email-input"
-                type="email"
-                placeholder="Email Address"
-                value={guestForm.email}
-                onChange={(e) => setGuestForm({ ...guestForm, email: e.target.value })}
-              />
-            </div>
+            <input
+              id="guest-email-input"
+              type="email"
+              placeholder="Email Address"
+              value={guestForm.email}
+              onChange={(e) => setGuestForm({ ...guestForm, email: e.target.value })}
+            />
 
-            <div className="input-group">
-              <input
-                id="guest-phone-input"
-                type="tel"
-                placeholder="Phone (Optional)"
-                value={guestForm.phone}
-                onChange={(e) => setGuestForm({ ...guestForm, phone: e.target.value })}
-              />
-            </div>
+            <input
+              id="guest-phone-input"
+              type="tel"
+              placeholder="Phone (Optional)"
+              value={guestForm.phone}
+              onChange={(e) => setGuestForm({ ...guestForm, phone: e.target.value })}
+            />
 
             <button
               type="submit"
@@ -392,29 +332,25 @@ export default function EventDetailPage() {
               className="btn btn-primary"
               disabled={addingGuest}
             >
-              <UserPlus size={16} />
-              <span>{addingGuest ? 'Generating...' : 'Add Guest'}</span>
+              {addingGuest ? 'Adding...' : 'Add Guest'}
             </button>
           </form>
 
-          {/* Newly Generated Invite Link Banner */}
           {latestInviteLink && (
             <div className="invite-link-banner" id="newly-created-link-box">
               <div className="invite-link-info">
-                <CheckCircle2 size={18} className="text-green" />
                 <div>
-                  <strong>Invitation Link Generated:</strong>
+                  <span className="meta-sub">Generated Invitation Link:</span>
                   <p className="invite-url-text">{latestInviteLink}</p>
                 </div>
               </div>
               <div className="banner-actions">
                 <button
                   onClick={() => handleCopyLink(latestInviteLink, 'latest')}
-                  className="btn btn-sm btn-gold"
+                  className="btn btn-sm btn-outline"
                   id="btn-copy-latest-link"
                 >
-                  {copiedToken === 'latest' ? <Check size={14} /> : <Copy size={14} />}
-                  <span>{copiedToken === 'latest' ? 'Copied!' : 'Copy Link'}</span>
+                  {copiedId === 'latest' ? 'Copied' : 'Copy Link'}
                 </button>
                 <a
                   href={latestInviteLink}
@@ -422,29 +358,26 @@ export default function EventDetailPage() {
                   rel="noreferrer"
                   className="btn btn-sm btn-outline"
                 >
-                  <ExternalLink size={14} />
-                  <span>Preview</span>
+                  Preview
                 </a>
               </div>
             </div>
           )}
         </div>
 
-        {/* Guest Table */}
         {guests.length === 0 ? (
           <div className="empty-substate">
-            <Users size={32} />
-            <p>No guests invited yet. Use the form above to add your first guest.</p>
+            No guests registered for this event yet.
           </div>
         ) : (
           <div className="table-responsive">
             <table className="guests-table">
               <thead>
                 <tr>
-                  <th>Guest Name</th>
-                  <th>Contact Info</th>
-                  <th>RSVP Status</th>
-                  <th>Invitation Link</th>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>Status</th>
+                  <th>Invite Link</th>
                   <th className="text-right">Action</th>
                 </tr>
               </thead>
@@ -465,22 +398,13 @@ export default function EventDetailPage() {
                       </td>
                       <td>
                         {guest.status === 'accepted' && (
-                          <span className="badge badge-accepted">
-                            <CheckCircle2 size={13} />
-                            Accepted
-                          </span>
+                          <span className="badge badge-accepted">Accepted</span>
                         )}
                         {guest.status === 'declined' && (
-                          <span className="badge badge-declined">
-                            <XCircle size={13} />
-                            Declined
-                          </span>
+                          <span className="badge badge-declined">Declined</span>
                         )}
                         {guest.status === 'pending' && (
-                          <span className="badge badge-pending">
-                            <HelpCircle size={13} />
-                            Pending
-                          </span>
+                          <span className="badge badge-pending">Pending</span>
                         )}
                       </td>
                       <td>
@@ -489,19 +413,17 @@ export default function EventDetailPage() {
                             id={`btn-copy-guest-link-${guest.id}`}
                             onClick={() => handleCopyLink(guest.token, guest.id)}
                             className="btn btn-xs btn-outline"
-                            title="Copy unique RSVP link"
                           >
-                            {copiedToken === guest.id ? <Check size={12} /> : <Copy size={12} />}
-                            <span>{copiedToken === guest.id ? 'Copied!' : 'Copy Link'}</span>
+                            {copiedId === guest.id ? 'Copied' : 'Copy'}
                           </button>
                           <a
                             href={inviteUrl}
                             target="_blank"
                             rel="noreferrer"
                             className="btn btn-xs btn-ghost"
-                            title="Open invitation page"
+                            title="Open link"
                           >
-                            <ExternalLink size={12} />
+                            ↗
                           </a>
                         </div>
                       </td>
@@ -512,7 +434,7 @@ export default function EventDetailPage() {
                           className="btn-icon-danger"
                           title="Remove guest"
                         >
-                          <Trash2 size={15} />
+                          ✕
                         </button>
                       </td>
                     </tr>
@@ -524,23 +446,18 @@ export default function EventDetailPage() {
         )}
       </section>
 
-      {/* SECTION: Event Materials & Documents (Section 7.5) */}
+      {/* Materials Section */}
       <section className="detail-section">
         <div className="section-header-row">
           <div>
-            <h2 className="section-title">
-              <FileText size={20} />
-              <span>Event Materials & Documents</span>
-            </h2>
+            <h2 className="section-title">Event Documentation</h2>
             <p className="section-subtitle">
-              Upload programs, brochures, keynote decks, or security notices (max 10MB; PDF, Word,
-              Excel, Image). Downloadable exclusively by confirmed (Accepted) guests.
+              Upload event documents (PDF, Word, Excel, images - max 10MB). Accessible to confirmed attendees.
             </p>
           </div>
 
-          <label className="btn btn-primary file-upload-btn" id="btn-upload-material">
-            <Upload size={16} />
-            <span>{uploadingMaterial ? 'Uploading...' : 'Upload File'}</span>
+          <label className="btn btn-outline btn-sm" id="btn-upload-material">
+            <span>{uploadingMaterial ? 'Uploading...' : '+ Upload File'}</span>
             <input
               type="file"
               onChange={handleFileUpload}
@@ -552,23 +469,19 @@ export default function EventDetailPage() {
 
         {materialError && (
           <div className="alert alert-error" role="alert">
-            <AlertCircle size={16} />
             <span>{materialError}</span>
           </div>
         )}
 
         {materials.length === 0 ? (
           <div className="empty-substate">
-            <FileText size={32} />
-            <p>No event materials uploaded yet. Upload event agendas or keynote briefs.</p>
+            No materials uploaded for this event.
           </div>
         ) : (
           <div className="materials-grid">
             {materials.map((item) => (
               <div key={item.id} className="material-card" id={`material-card-${item.id}`}>
-                <div className="material-icon-box">
-                  <FileText size={24} />
-                </div>
+                <div className="material-icon-box">DOC</div>
                 <div className="material-info">
                   <h4 className="material-name" title={item.file_name}>
                     {item.file_name}
@@ -583,10 +496,9 @@ export default function EventDetailPage() {
                     target="_blank"
                     rel="noreferrer"
                     download
-                    className="btn-icon"
-                    title="Download"
+                    className="btn btn-xs btn-outline"
                   >
-                    <Download size={16} />
+                    Download
                   </a>
                   <button
                     id={`btn-delete-material-${item.id}`}
@@ -594,7 +506,7 @@ export default function EventDetailPage() {
                     className="btn-icon-danger"
                     title="Delete file"
                   >
-                    <Trash2 size={16} />
+                    ✕
                   </button>
                 </div>
               </div>

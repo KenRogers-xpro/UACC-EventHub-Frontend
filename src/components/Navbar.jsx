@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Plane, Calendar, PlusCircle, LogOut, User } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 export default function Navbar() {
   const { admin, logout } = useAuth();
@@ -19,11 +19,9 @@ export default function Navbar() {
     <header className="navbar-container">
       <div className="navbar-content">
         <Link to="/dashboard" className="brand-logo" id="nav-brand-logo">
-          <div className="brand-icon-wrapper">
-            <Plane className="brand-icon" size={24} />
-          </div>
+          <div className="brand-mark">UACC</div>
           <div className="brand-text">
-            <span className="brand-title">UACC EventHub</span>
+            <span className="brand-title">EventHub</span>
             <span className="brand-subtitle">Uganda Air Cargo Corporation</span>
           </div>
         </Link>
@@ -35,8 +33,7 @@ export default function Navbar() {
               id="nav-link-dashboard"
               className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
             >
-              <Calendar size={18} />
-              <span>Events</span>
+              Events
             </Link>
 
             <Link
@@ -44,15 +41,13 @@ export default function Navbar() {
               id="nav-link-create-event"
               className={`nav-link ${isActive('/events/new') ? 'active' : ''}`}
             >
-              <PlusCircle size={18} />
-              <span>Create Event</span>
+              + Create Event
             </Link>
 
             <div className="nav-user-menu">
-              <div className="user-badge" title={admin.email}>
-                <User size={16} />
-                <span className="user-name">{admin.name || admin.email}</span>
-              </div>
+              <span className="user-badge" title={admin.email}>
+                {admin.email}
+              </span>
 
               <button
                 id="btn-logout"
@@ -60,7 +55,7 @@ export default function Navbar() {
                 className="btn-logout"
                 title="Sign out"
               >
-                <LogOut size={16} />
+                <LogOut size={13} />
                 <span>Logout</span>
               </button>
             </div>

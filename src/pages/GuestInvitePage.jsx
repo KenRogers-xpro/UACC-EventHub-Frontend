@@ -1,21 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { rsvpAPI } from '../api/client';
-import confetti from 'canvas-confetti';
-import {
-  Plane,
-  Calendar,
-  Clock,
-  MapPin,
-  Tag,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Download,
-  FileText,
-  Sparkles,
-  ShieldCheck,
-} from 'lucide-react';
 
 export default function GuestInvitePage() {
   const { token } = useParams();
@@ -24,17 +9,14 @@ export default function GuestInvitePage() {
   const [loading, setLoading] = useState(true);
   const [errorPageMessage, setErrorPageMessage] = useState('');
 
-  // RSVP status state
   const [status, setStatus] = useState('pending');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState('');
   const [actionError, setActionError] = useState('');
 
-  // Materials state (downloadable once accepted)
   const [materials, setMaterials] = useState([]);
   const [loadingMaterials, setLoadingMaterials] = useState(false);
 
-  // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -45,7 +27,6 @@ export default function GuestInvitePage() {
 
   const timerRef = useRef(null);
 
-  // Fetch invitation details on load
   useEffect(() => {
     if (!token) {
       setErrorPageMessage('This invitation link is not valid');
@@ -60,7 +41,6 @@ export default function GuestInvitePage() {
           setInvitation(res);
           setStatus(res.current_status || 'pending');
 
-          // If already accepted, load event materials right away
           if (res.current_status === 'accepted') {
             fetchMaterials();
           }
@@ -80,7 +60,6 @@ export default function GuestInvitePage() {
     fetchInvitation();
   }, [token]);
 
-  // Fetch downloadable materials for accepted guests
   const fetchMaterials = async () => {
     setLoadingMaterials(true);
     try {
@@ -95,7 +74,6 @@ export default function GuestInvitePage() {
     }
   };
 
-  // Countdown timer logic matching Section 18
   useEffect(() => {
     if (!invitation?.event?.rsvp_deadline) return;
 
@@ -124,7 +102,6 @@ export default function GuestInvitePage() {
     return () => clearInterval(timerRef.current);
   }, [invitation]);
 
-  // Handle Accept or Decline
   const handleRSVP = async (responseType) => {
     setIsSubmitting(true);
     setActionError('');
@@ -136,18 +113,6 @@ export default function GuestInvitePage() {
         setConfirmationMsg(res.message);
 
         if (responseType === 'accepted') {
-          // Trigger celebratory confetti
-          try {
-            confetti({
-              particleCount: 80,
-              spread: 60,
-              origin: { y: 0.6 },
-              colors: ['#DAA520', '#1E3E62', '#0B192C', '#FFD700'],
-            });
-          } catch (e) {
-            // ignore if blocked
-          }
-          // Fetch event materials
           fetchMaterials();
         }
       }
@@ -179,7 +144,7 @@ export default function GuestInvitePage() {
       <div className="invite-page-container">
         <div className="spinner-wrapper">
           <div className="spinner"></div>
-          <p>Verifying secure VIP invitation link...</p>
+          <p>Verifying invitation record...</p>
         </div>
       </div>
     );
@@ -189,13 +154,10 @@ export default function GuestInvitePage() {
     return (
       <div className="invite-page-container">
         <div className="invite-error-card">
-          <div className="error-icon-box">
-            <AlertTriangle size={48} className="text-amber" />
-          </div>
-          <h2>Invalid or Expired Invitation</h2>
+          <h2>Invitation Notice</h2>
           <p>{errorPageMessage}</p>
           <div className="error-footer">
-            <span>Uganda Air Cargo Corporation • Protocol & Relations</span>
+            Uganda Air Cargo Corporation
           </div>
         </div>
       </div>
@@ -206,63 +168,55 @@ export default function GuestInvitePage() {
 
   return (
     <div className="invite-page-container">
-      {/* Decorative Corporate Top Bar */}
       <header className="invite-brand-bar">
         <div className="invite-brand-content">
           <div className="brand-logo-pill">
-            <Plane size={20} className="brand-icon" />
+            <div className="brand-mark">UACC</div>
             <div className="pill-text">
               <span className="pill-title">UGANDA AIR CARGO CORPORATION</span>
-              <span className="pill-sub">Official Protocol & Corporate Invitation</span>
+              <span className="pill-sub">Official Corporate Invitation</span>
             </div>
           </div>
-          <div className="security-badge" title="Official cryptographically verified invitation link">
-            <ShieldCheck size={16} />
-            <span>Verified Official Link</span>
-          </div>
+          <span className="security-badge">REF: {token.substring(0, 8).toUpperCase()}</span>
         </div>
       </header>
 
       <main className="invite-main-wrapper">
         <div className="invitation-card" id="public-invitation-card">
-          {/* Cover Media */}
-          <div
-            className="invite-cover-header"
-            style={{
-              backgroundImage: event.cover_image_url
-                ? `linear-gradient(to bottom, rgba(11,25,44,0.3), rgba(11,25,44,0.92)), url(${event.cover_image_url})`
-                : 'linear-gradient(135deg, #0B192C 0%, #1E3E62 100%)',
-            }}
-          >
-            <div className="invite-cover-badge">
-              <Sparkles size={14} />
-              <span>Official Invitation</span>
+          {event.cover_image_url && (
+            <div
+              className="invite-cover-header"
+              style={{ backgroundImage: `url(${event.cover_image_url})` }}
+            >
+              <span className="invite-cover-badge">Official Invitation</span>
+              <h1 className="invite-event-title">{event.title}</h1>
             </div>
-            <h1 className="invite-event-title">{event.title}</h1>
-          </div>
+          )}
+
+          {!event.cover_image_url && (
+            <div className="invite-cover-header">
+              <span className="invite-cover-badge">Official Invitation</span>
+              <h1 className="invite-event-title">{event.title}</h1>
+            </div>
+          )}
 
           <div className="invitation-card-body">
-            {/* Salutation */}
             <div className="guest-salutation-box">
-              <span className="salutation-prefix">Cordially Invited:</span>
+              <span className="salutation-prefix">To:</span>
               <h2 className="guest-salutation-name">{guest_name}</h2>
               <p className="salutation-note">
-                Uganda Air Cargo Corporation takes great honor in requesting the pleasure of your
-                company at this distinguished gathering.
+                Uganda Air Cargo Corporation requests your presence at the following corporate event.
               </p>
             </div>
 
-            {/* Event Description */}
             {event.description && (
               <div className="invite-description-box">
                 <p>{event.description}</p>
               </div>
             )}
 
-            {/* Key Event Details Grid */}
             <div className="invite-details-grid">
               <div className="invite-detail-card">
-                <Calendar className="detail-icon" size={24} />
                 <div>
                   <span className="detail-label">Date</span>
                   <strong className="detail-val">{formatDate(event.event_date)}</strong>
@@ -271,7 +225,6 @@ export default function GuestInvitePage() {
 
               {event.event_time && (
                 <div className="invite-detail-card">
-                  <Clock className="detail-icon" size={24} />
                   <div>
                     <span className="detail-label">Time</span>
                     <strong className="detail-val">{event.event_time}</strong>
@@ -280,7 +233,6 @@ export default function GuestInvitePage() {
               )}
 
               <div className="invite-detail-card">
-                <MapPin className="detail-icon" size={24} />
                 <div>
                   <span className="detail-label">Venue</span>
                   <strong className="detail-val">{event.venue}</strong>
@@ -289,7 +241,6 @@ export default function GuestInvitePage() {
 
               {event.dress_code && (
                 <div className="invite-detail-card">
-                  <Tag className="detail-icon" size={24} />
                   <div>
                     <span className="detail-label">Dress Code</span>
                     <strong className="detail-val">{event.dress_code}</strong>
@@ -298,10 +249,10 @@ export default function GuestInvitePage() {
               )}
             </div>
 
-            {/* Live RSVP Countdown Timer (Section 18) */}
+            {/* Countdown Timer */}
             <div className="rsvp-countdown-container">
               <span className="countdown-title">
-                {timeLeft.isPassed ? 'RSVP Deadline Has Passed' : 'RSVP Deadline Countdown'}
+                {timeLeft.isPassed ? 'RSVP Deadline Passed' : 'RSVP Response Window'}
               </span>
 
               {!timeLeft.isPassed ? (
@@ -334,12 +285,12 @@ export default function GuestInvitePage() {
                 </div>
               ) : (
                 <p className="deadline-passed-text">
-                  The final response window for this ceremony closed.
+                  The deadline for RSVP responses has elapsed.
                 </p>
               )}
             </div>
 
-            {/* RSVP Response Section */}
+            {/* RSVP Action */}
             <div className="rsvp-action-section">
               {actionError && (
                 <div className="alert alert-error" role="alert">
@@ -347,106 +298,82 @@ export default function GuestInvitePage() {
                 </div>
               )}
 
-              {/* Status is PENDING and deadline hasn't passed */}
               {status === 'pending' && !timeLeft.isPassed && (
                 <div className="rsvp-buttons-group">
-                  <p className="rsvp-prompt">Kindly confirm your attendance below:</p>
+                  <p className="rsvp-prompt">Please submit your response:</p>
                   <div className="buttons-row">
                     <button
                       id="btn-rsvp-accept"
                       onClick={() => handleRSVP('accepted')}
-                      className="btn btn-rsvp-accept"
+                      className="btn-rsvp-accept"
                       disabled={isSubmitting}
                     >
-                      <CheckCircle size={20} />
-                      <span>{isSubmitting ? 'Submitting...' : 'Accept & Confirm Attendance'}</span>
+                      {isSubmitting ? 'Submitting...' : 'Accept & Confirm Attendance'}
                     </button>
                     <button
                       id="btn-rsvp-decline"
                       onClick={() => handleRSVP('declined')}
-                      className="btn btn-rsvp-decline"
+                      className="btn-rsvp-decline"
                       disabled={isSubmitting}
                     >
-                      <XCircle size={20} />
-                      <span>{isSubmitting ? 'Submitting...' : 'Decline with Regrets'}</span>
+                      {isSubmitting ? 'Submitting...' : 'Decline with Regrets'}
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Status is ACCEPTED */}
               {status === 'accepted' && (
                 <div className="status-banner banner-accepted">
-                  <CheckCircle size={32} className="text-green" />
-                  <div>
-                    <h3 className="status-title">Attendance Confirmed</h3>
-                    <p className="status-desc">
-                      {confirmationMsg || 'Your attendance has been confirmed. Welcome!'}
-                    </p>
-                    <small>
-                      You may download official event materials and access documentation below.
-                    </small>
-                  </div>
+                  <h3 className="status-title">Attendance Confirmed</h3>
+                  <p className="status-desc">
+                    {confirmationMsg || 'Your attendance has been recorded.'}
+                  </p>
                 </div>
               )}
 
-              {/* Status is DECLINED */}
               {status === 'declined' && (
                 <div className="status-banner banner-declined">
-                  <XCircle size={32} className="text-red" />
-                  <div>
-                    <h3 className="status-title">Attendance Declined</h3>
-                    <p className="status-desc">
-                      {confirmationMsg ||
-                        'Thank you for letting us know. You have been marked as unable to attend.'}
-                    </p>
-                  </div>
+                  <h3 className="status-title">Attendance Declined</h3>
+                  <p className="status-desc">
+                    {confirmationMsg || 'You have been marked as unable to attend.'}
+                  </p>
                 </div>
               )}
 
-              {/* Status is PENDING but Deadline has passed */}
               {status === 'pending' && timeLeft.isPassed && (
                 <div className="status-banner banner-expired">
-                  <AlertTriangle size={32} className="text-amber" />
-                  <div>
-                    <h3 className="status-title">RSVP Window Closed</h3>
-                    <p className="status-desc">
-                      The response deadline for this event has passed. Please contact UACC Protocol
-                      directly for special inquiries.
-                    </p>
-                  </div>
+                  <h3 className="status-title">RSVP Closed</h3>
+                  <p className="status-desc">
+                    The response deadline has passed.
+                  </p>
                 </div>
               )}
             </div>
 
-            {/* EVENT MATERIALS (Accessible to Accepted Guests only - Section 6.2 & 18) */}
+            {/* Event Documentation */}
             {status === 'accepted' && (
               <div className="guest-materials-section">
                 <div className="materials-header">
-                  <FileText size={22} className="text-gold" />
-                  <div>
-                    <h3 className="materials-title">Event Materials & Program</h3>
-                    <p className="materials-subtitle">
-                      Exclusive documentation, itineraries, and briefings for confirmed attendees.
-                    </p>
-                  </div>
+                  <h3 className="materials-title">Event Documentation</h3>
+                  <p className="materials-subtitle">
+                    Official documents for confirmed attendees.
+                  </p>
                 </div>
 
                 {loadingMaterials ? (
                   <div className="spinner-wrapper small">
                     <div className="spinner"></div>
-                    <p>Loading documents...</p>
+                    <p>Loading files...</p>
                   </div>
                 ) : materials.length === 0 ? (
-                  <p className="text-muted text-center py-2">
-                    Event materials will be made available here prior to the ceremony.
+                  <p className="text-muted" style={{ fontSize: '0.85rem' }}>
+                    No downloadable materials currently attached to this event.
                   </p>
                 ) : (
                   <div className="guest-materials-list">
                     {materials.map((m) => (
                       <div key={m.id} className="guest-material-card">
                         <div className="material-left">
-                          <FileText size={24} className="doc-icon" />
                           <div>
                             <span className="file-title">{m.file_name}</span>
                             <span className="file-meta">
@@ -459,10 +386,9 @@ export default function GuestInvitePage() {
                           target="_blank"
                           rel="noreferrer"
                           download
-                          className="btn btn-sm btn-gold"
+                          className="btn btn-xs btn-outline"
                         >
-                          <Download size={14} />
-                          <span>Download</span>
+                          Download
                         </a>
                       </div>
                     ))}
@@ -473,8 +399,7 @@ export default function GuestInvitePage() {
           </div>
 
           <div className="invite-card-footer">
-            <Plane size={16} />
-            <span>Uganda Air Cargo Corporation — Delivering Excellence Across Continents</span>
+            Uganda Air Cargo Corporation — Official Protocol
           </div>
         </div>
       </main>
