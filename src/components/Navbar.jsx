@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Menu, X, Calendar, PlusCircle, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const { admin, logout } = useAuth();
@@ -47,15 +47,14 @@ export default function Navbar() {
 
         {admin && (
           <>
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation (Text only, no icons, clean alignment) */}
             <nav className="nav-links desktop-only" aria-label="Main Navigation">
               <Link
                 to="/dashboard"
                 id="nav-link-dashboard"
                 className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
               >
-                <Calendar size={15} />
-                <span>Events</span>
+                Events
               </Link>
 
               <Link
@@ -63,13 +62,11 @@ export default function Navbar() {
                 id="nav-link-create-event"
                 className={`nav-link ${isActive('/events/new') ? 'active' : ''}`}
               >
-                <PlusCircle size={15} />
-                <span>+ Create Event</span>
+                + Create Event
               </Link>
 
               <div className="nav-user-menu">
                 <span className="user-badge" title={admin.email}>
-                  <User size={13} style={{ marginRight: '4px', verticalAlign: 'text-bottom' }} />
                   {admin.email}
                 </span>
 
@@ -79,8 +76,7 @@ export default function Navbar() {
                   className="btn-logout"
                   title="Sign out"
                 >
-                  <LogOut size={14} />
-                  <span>Logout</span>
+                  Logout
                 </button>
               </div>
             </nav>
@@ -93,7 +89,7 @@ export default function Navbar() {
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </>
         )}
@@ -125,8 +121,7 @@ export default function Navbar() {
                 className={`mobile-nav-link ${isActive('/dashboard') ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Calendar size={18} />
-                <span>Events Management</span>
+                Events Management
               </Link>
 
               <Link
@@ -135,8 +130,7 @@ export default function Navbar() {
                 className={`mobile-nav-link ${isActive('/events/new') ? 'active' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <PlusCircle size={18} />
-                <span>Create New Event</span>
+                + Create Event
               </Link>
             </nav>
 
@@ -146,8 +140,7 @@ export default function Navbar() {
                 onClick={handleLogout}
                 className="mobile-btn-logout"
               >
-                <LogOut size={16} />
-                <span>Sign Out</span>
+                Logout
               </button>
             </div>
           </div>
