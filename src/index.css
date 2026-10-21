@@ -1301,27 +1301,23 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   position: relative;
 }
 
-/* 1. TOP PROTOCOL BAR */
+/* 1. TOP PROTOCOL BAR (STATIC ON SCROLL) */
 .invite-top-nav {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: rgba(8, 11, 17, 0.85);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  position: relative;
+  width: 100%;
+  z-index: 10;
+  background: rgba(8, 11, 17, 0.95);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
 }
 
 .top-nav-container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0.85rem 2.5rem;
+  padding: 0.9rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .top-nav-brand {
@@ -2411,6 +2407,12 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   gap: 1rem;
   min-width: 0;
+  flex: 1;
+}
+
+.material-file-info > div {
+  min-width: 0;
+  flex: 1;
 }
 
 .file-format-badge {
@@ -2433,11 +2435,14 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .material-meta-sub {
   font-size: 0.78rem;
   color: #94A3B8;
+  display: block;
+  margin-top: 0.2rem;
 }
 
 .btn-material-download {
@@ -2453,6 +2458,10 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   border-radius: 9999px;
   text-decoration: none;
   white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 
@@ -2764,6 +2773,17 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   }
 }
 
+@media (max-width: 860px) {
+  .ref-token-pill {
+    display: none; /* Hide reference token on screens <= 860px to preserve breathing room */
+  }
+
+  .top-nav-container {
+    padding: 0.75rem 1.25rem;
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 768px) {
   .top-nav-container {
     padding: 0.75rem 1rem;
@@ -2938,33 +2958,123 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   .floating-protocol-chat .chat-label {
     display: none;
   }
+
+  /* Event Documentation Card Stacking on Mobile (Prevents button overlap) */
+  .refined-material-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.2rem 1.1rem;
+  }
+
+  .material-file-info {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .material-title {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .btn-material-download {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 0.72rem 1rem;
+    font-size: 0.72rem;
+  }
 }
 
-@media (max-width: 480px) {
+/* 4. Small Mobile Phones (<= 640px): Dynamic 2-Row Top Protocol Nav */
+@media (max-width: 640px) {
   .top-nav-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand rsvp"
+      "ticker ticker";
+    gap: 0.65rem 0.75rem;
     padding: 0.65rem 0.85rem;
+    align-items: center;
+  }
+
+  .top-nav-brand {
+    grid-area: brand;
+    min-width: 0;
+    gap: 0.65rem;
+  }
+
+  .brand-crest {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .crest-initials {
+    font-size: 0.72rem;
+  }
+
+  .brand-titles {
+    min-width: 0;
   }
 
   .brand-company {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .ref-token-pill {
-    display: none; /* Hide token on smallest screens to give room to ticker & RSVP */
+  .brand-sub {
+    font-size: 0.58rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .top-nav-actions {
+    display: contents; /* Direct children (ticker, rsvp) become grid items of top-nav-container */
   }
 
   .nav-rsvp-pill {
-    padding: 0.4rem 0.85rem;
-    font-size: 0.68rem;
+    grid-area: rsvp;
+    justify-self: end;
+    padding: 0.45rem 1.05rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .nav-countdown-ticker {
-    padding: 0.2rem 0.55rem;
-    gap: 0.35rem;
+    grid-area: ticker;
+    width: 100%;
+    justify-content: center;
+    padding: 0.35rem 0.75rem;
+    margin: 0;
   }
 
   .ticker-label {
-    display: none; /* Icon and numbers only on narrow phones */
+    font-size: 0.6rem;
+  }
+
+  .ticker-digits {
+    font-size: 0.72rem;
+  }
+}
+
+/* 5. Micro / Compact Mobile Screens (<= 380px) */
+@media (max-width: 380px) {
+  .ticker-label {
+    display: none; /* Hide label on micro screens so digits remain spacious */
+  }
+
+  .ticker-digits {
+    font-size: 0.68rem;
   }
 }
 
