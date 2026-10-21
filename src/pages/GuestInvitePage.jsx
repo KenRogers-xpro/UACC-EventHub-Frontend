@@ -76,15 +76,34 @@ export default function GuestInvitePage() {
     }
   };
 
-  // Live countdown targeting event date (or RSVP deadline)
+  // Live countdown targeting event date and time
   useEffect(() => {
     if (!invitation?.event) return;
 
-    // Use event_date as the primary celebration countdown target
-    const targetDateStr = invitation.event.event_date || invitation.event.rsvp_deadline;
-    if (!targetDateStr) return;
+    const ev = invitation.event;
+    if (!ev.event_date) return;
 
-    const targetTime = new Date(targetDateStr).getTime();
+    // Calculate exact event timestamp
+    const calculateEventTime = () => {
+      const datePart = ev.event_date.split('T')[0];
+      let timePart = '09:00:00'; // Default 9:00 AM if no time specified
+
+      if (ev.event_time) {
+        const timeMatch = ev.event_time.match(/(\d{1,2}):(\d{2})/);
+        if (timeMatch) {
+          let hrs = parseInt(timeMatch[1], 10);
+          const mins = timeMatch[2];
+          if (/pm/i.test(ev.event_time) && hrs < 12) hrs += 12;
+          if (/am/i.test(ev.event_time) && hrs === 12) hrs = 0;
+          timePart = `${String(hrs).padStart(2, '0')}:${mins}:00`;
+        }
+      }
+
+      const parsed = new Date(`${datePart}T${timePart}`);
+      return !isNaN(parsed.getTime()) ? parsed.getTime() : new Date(ev.event_date).getTime();
+    };
+
+    const targetTime = calculateEventTime();
 
     const updateTimer = () => {
       const now = Date.now();
@@ -282,7 +301,6 @@ export default function GuestInvitePage() {
   }
 
   const { event, guest_name } = invitation;
-  const isDeadlinePassed = countdown.isPassed;
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue || 'Entebbe, Uganda')}`;
   const whatsappUrl = `https://wa.me/256701050600?text=${encodeURIComponent(
     `Hello UACC Protocol Desk, I am ${guest_name} regarding the invitation for "${event.title}".`
@@ -290,7 +308,7 @@ export default function GuestInvitePage() {
 
   return (
     <div className="invite-fullscreen-page" id="top">
-      {/* 1. TOP BRAND PROTOCOL BAR */}
+      {/* 1. TOP BRAND PROTOCOL BAR WITH LIVE EVENT COUNTDOWN TICKER */}
       <header className="invite-top-nav">
         <div className="top-nav-container">
           <div className="top-nav-brand">
@@ -298,15 +316,37 @@ export default function GuestInvitePage() {
               <span className="crest-initials">UACC</span>
             </div>
             <div className="brand-titles">
-              <span className="brand-company">UGANDA AIR CARGO CORPORATION</span>
-              <span className="brand-sub">OFFICIAL INVITATION PORTAL</span>
+              <span className="brand-company">UGANDA AIR CARGO</span>
+              <span className="brand-sub">OFFICIAL INVITATION</span>
             </div>
           </div>
+
+          {/* Nav Center: Sleek Live Countdown to Event */}
+          {!countdown.isPassed ? (
+            <div className="nav-countdown-ticker" title="Time remaining until the event">
+              <span className="ticker-pulse-dot"></span>
+              <span className="ticker-label">EVENT IN:</span>
+              <div className="ticker-digits">
+                <span className="ticker-unit"><b>{countdown.days}</b><small>d</small></span>
+                <span className="ticker-colon">:</span>
+                <span className="ticker-unit"><b>{String(countdown.hours).padStart(2, '0')}</b><small>h</small></span>
+                <span className="ticker-colon">:</span>
+                <span className="ticker-unit"><b>{String(countdown.minutes).padStart(2, '0')}</b><small>m</small></span>
+                <span className="ticker-colon">:</span>
+                <span className="ticker-unit"><b>{String(countdown.seconds).padStart(2, '0')}</b><small>s</small></span>
+              </div>
+            </div>
+          ) : (
+            <div className="nav-countdown-ticker ticker-underway">
+              <span className="ticker-pulse-dot underway"></span>
+              <span className="ticker-label">EVENT UNDERWAY</span>
+            </div>
+          )}
 
           <div className="top-nav-actions">
             <span className="ref-token-pill">REF: {token.substring(0, 8).toUpperCase()}</span>
             <a href="#rsvp" className="nav-rsvp-pill">
-              {status === 'accepted' ? '✓ Attending' : status === 'declined' ? 'Declined' : 'RSVP Now'}
+              {status === 'accepted' ? '✓ Attending' : status === 'declined' ? 'Declined' : 'RSVP'}
             </a>
           </div>
         </div>
@@ -314,9 +354,42 @@ export default function GuestInvitePage() {
 
       {/* 2. GRAND FULL-SCREEN HERO SECTION */}
       <section className="grand-hero-section">
+        {/* Subtle Ambient Bleed Image Layer positioned at top behind the nav bar */}
+        {event.cover_image_url && (
+          <div
+            className="hero-top-ambient-bleed"
+            style={{ backgroundImage: `url(${event.cover_image_url})` }}
+            aria-hidden="true"
+          ></div>
+        )}
+
         <div className="hero-ambient-glow"></div>
+
         <div className="hero-grid-container">
-          {/* Left Column: Typography & Formal Invitation */}
+          {/* Hero Visual Column: on small screens, stays at the very top right behind/below nav bar */}
+          <div className="hero-visual-column">
+            <div className="hero-image-blend-wrapper">
+              {event.cover_image_url ? (
+                <div className="hero-blend-frame">
+                  <img
+                    src={event.cover_image_url}
+                    alt={event.title}
+                    className="hero-borderless-image"
+                    fetchPriority="high"
+                  />
+                  <div className="hero-image-soft-gradient-overlay"></div>
+                </div>
+              ) : (
+                <div className="hero-default-crest-visual">
+                  <div className="crest-symbol">UACC</div>
+                  <span className="crest-caption">UGANDA AIR CARGO CORPORATION</span>
+                  <span className="crest-motto">Wings of the Nation</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Hero Content Column: Formal invitation text */}
           <div className="hero-content-column">
             <div className="hero-kicker-row">
               <span className="kicker-line"></span>
@@ -367,89 +440,54 @@ export default function GuestInvitePage() {
               </div>
             </div>
           </div>
-
-          {/* Right Column: Hero Visual Seamlessly Blending Without Borders */}
-          <div className="hero-visual-column">
-            <div className="hero-image-blend-wrapper">
-              {event.cover_image_url ? (
-                <div className="hero-blend-frame">
-                  <img
-                    src={event.cover_image_url}
-                    alt={event.title}
-                    className="hero-borderless-image"
-                    fetchPriority="high"
-                  />
-                  <div className="hero-image-soft-gradient-overlay"></div>
-                </div>
-              ) : (
-                <div className="hero-default-crest-visual">
-                  <div className="crest-rings-outer"></div>
-                  <div className="crest-rings-inner"></div>
-                  <div className="crest-symbol">UACC</div>
-                  <span className="crest-caption">UGANDA AIR CARGO CORPORATION</span>
-                  <span className="crest-motto">Wings of the Nation</span>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Scroll Indicator */}
         <a href="#countdown" className="hero-scroll-cue" aria-label="Scroll to view event countdown and details">
-          <span>Explore Details</span>
+          <span>Event Countdown</span>
           <span className="scroll-chevron">↓</span>
         </a>
       </section>
 
-      {/* 3. LIVE COUNTDOWN SECTION */}
+      {/* 3. MINIMALIST CINEMATIC COUNTDOWN SECTION (MATCHING REFERENCE AESTHETIC) */}
       <section className="grand-countdown-section" id="countdown">
         <div className="countdown-wrap center">
-          <div className="ornament-divider" aria-hidden="true">
-            <span className="orn-line"></span>
-            <span className="orn-diamond">✦</span>
-            <span className="orn-line"></span>
-          </div>
-
-          <h2 className="countdown-heading">
-            {countdown.isPassed ? 'The Event Date Has Arrived' : 'Counting Down To The Occasion'}
-          </h2>
+          <p className="countdown-kicker-minimal">COUNTING DOWN TO THE EVENT</p>
 
           {!countdown.isPassed ? (
-            <div className="countdown-tiles-row">
-              <div className="timer-tile">
-                <span className="timer-num">{countdown.days}</span>
-                <span className="timer-tag">Days</span>
+            <div className="minimal-clock-container">
+              <div className="minimal-clock-digit-group">
+                <span className="minimal-clock-num">{countdown.days}</span>
+                <span className="minimal-clock-label">DAYS</span>
               </div>
-              <span className="timer-colon">:</span>
-              <div className="timer-tile">
-                <span className="timer-num">{String(countdown.hours).padStart(2, '0')}</span>
-                <span className="timer-tag">Hours</span>
+              <span className="minimal-clock-colon">:</span>
+              <div className="minimal-clock-digit-group">
+                <span className="minimal-clock-num">{String(countdown.hours).padStart(2, '0')}</span>
+                <span className="minimal-clock-label">HOURS</span>
               </div>
-              <span className="timer-colon">:</span>
-              <div className="timer-tile">
-                <span className="timer-num">{String(countdown.minutes).padStart(2, '0')}</span>
-                <span className="timer-tag">Minutes</span>
+              <span className="minimal-clock-colon">:</span>
+              <div className="minimal-clock-digit-group">
+                <span className="minimal-clock-num">{String(countdown.minutes).padStart(2, '0')}</span>
+                <span className="minimal-clock-label">MINUTES</span>
               </div>
-              <span className="timer-colon">:</span>
-              <div className="timer-tile">
-                <span className="timer-num">{String(countdown.seconds).padStart(2, '0')}</span>
-                <span className="timer-tag">Seconds</span>
+              <span className="minimal-clock-colon">:</span>
+              <div className="minimal-clock-digit-group">
+                <span className="minimal-clock-num">{String(countdown.seconds).padStart(2, '0')}</span>
+                <span className="minimal-clock-label">SECONDS</span>
               </div>
             </div>
           ) : (
-            <p className="countdown-passed-banner">
-              The scheduled time for this gathering has commenced. Welcome!
-            </p>
+            <div className="countdown-underway-banner">
+              <h3>The Gathering Is Underway</h3>
+              <p>Welcome to Uganda Air Cargo Corporation's official occasion.</p>
+            </div>
           )}
 
-          <p className="countdown-subtext">
-            {event.rsvp_deadline && (
-              <>
-                Please ensure you confirm your RSVP before the protocol cutoff date:{' '}
-                <strong>{formatDateLong(event.rsvp_deadline)}</strong>.
-              </>
-            )}
-          </p>
+          {event.rsvp_deadline && (
+            <p className="countdown-subtext-optional">
+              RSVP requested by {formatDateLong(event.rsvp_deadline)} (Optional). Attendance confirmation remains open.
+            </p>
+          )}
         </div>
       </section>
 
@@ -556,11 +594,15 @@ export default function GuestInvitePage() {
             <p className="rsvp-lead-sub">
               Please inform the Organizing Committee if you will join us for this occasion.
             </p>
-            {event.rsvp_deadline && (
-              <p className="rsvp-deadline-sub">
-                Official protocol cutoff: <strong>{formatDateLong(event.rsvp_deadline)}</strong>
-              </p>
-            )}
+            <p className="rsvp-deadline-sub">
+              {event.rsvp_deadline ? (
+                <>
+                  Suggested confirmation by <strong>{formatDateLong(event.rsvp_deadline)}</strong> (Optional) • Attendance response is open
+                </>
+              ) : (
+                <>Attendance confirmation is open • Please respond at your convenience</>
+              )}
+            </p>
           </div>
 
           <div className="rsvp-interactive-card">
