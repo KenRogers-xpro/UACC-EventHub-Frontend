@@ -22,6 +22,9 @@ export default function CreateEditEventPage() {
   const [loading, setLoading] = useState(isEditing);
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const pageTitle = isEditing ? 'Edit Event' : 'Create Event';
 
@@ -76,48 +79,20 @@ export default function CreateEditEventPage() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (loadEvent) => {
-      const img = new Image();
-      img.onload = () => {
-        // Optimize cover image to retina/HD max dimensions (1600x900)
-        const MAX_WIDTH = 1600;
-        const MAX_HEIGHT = 900;
-        let width = img.width;
-        let height = img.height;
+    if (file.size > 10 * 1024 * 1024) {
+      setErrors(['Image file is too large. Maximum size is 10MB.']);
+      return;
+    }
 
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height = Math.round((height * MAX_WIDTH) / width);
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width = Math.round((width * MAX_HEIGHT) / height);
-            height = MAX_HEIGHT;
-          }
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // High quality compressed JPEG
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-
-        setFormData((prev) => ({
-          ...prev,
-          cover_image_url: compressedDataUrl,
-        }));
-      };
-      img.src = loadEvent.target.result;
-    };
-    reader.readAsDataURL(file);
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+    // Clear any existing URL so the file takes precedence
+    setFormData((prev) => ({ ...prev, cover_image_url: '' }));
   };
 
   const handleRemoveImage = () => {
+    setCoverFile(null);
+    setCoverPreview('');
     setFormData((prev) => ({
       ...prev,
       cover_image_url: '',
@@ -151,12 +126,29 @@ export default function CreateEditEventPage() {
     setSubmitting(true);
 
     try {
+      // Upload cover image to Cloudinary first if a file was selected
+      let finalFormData = { ...formData };
+      if (coverFile) {
+        setUploadingImage(true);
+        try {
+          const uploadRes = await eventsAPI.uploadCoverImage(coverFile);
+          finalFormData.cover_image_url = uploadRes.url;
+        } catch (uploadErr) {
+          const msg = uploadErr.response?.data?.message || 'Failed to upload cover image';
+          setErrors([msg]);
+          setSubmitting(false);
+          setUploadingImage(false);
+          return;
+        }
+        setUploadingImage(false);
+      }
+
       let savedEventId = eventId;
       if (isEditing) {
-        const res = await eventsAPI.update(eventId, formData);
+        const res = await eventsAPI.update(eventId, finalFormData);
         savedEventId = res.event.id;
       } else {
-        const res = await eventsAPI.create(formData);
+        const res = await eventsAPI.create(finalFormData);
         savedEventId = res.event.id;
       }
 
@@ -319,7 +311,7 @@ export default function CreateEditEventPage() {
         <div className="form-section">
           <h2 className="section-title">Media & Cover Image</h2>
 
-          {!formData.cover_image_url ? (
+          {!coverPreview && !formData.cover_image_url ? (
             <div>
               <label
                 htmlFor="cover-file-upload"
@@ -328,7 +320,7 @@ export default function CreateEditEventPage() {
               >
                 <span className="upload-icon">📷</span>
                 <span className="upload-prompt">Click to upload event cover photo</span>
-                <span className="upload-hint">Supports JPEG, PNG, WebP (Max 8MB)</span>
+                <span className="upload-hint">Supports JPEG, PNG, WebP (Max 10MB)</span>
                 <input
                   id="cover-file-upload"
                   type="file"
@@ -353,13 +345,13 @@ export default function CreateEditEventPage() {
           ) : (
             <div className="image-preview-card" id="cover-preview-card">
               <img
-                src={formData.cover_image_url}
+                src={coverPreview || formData.cover_image_url}
                 alt="Event cover preview"
                 className="cover-preview-img"
               />
               <div className="preview-actions-bar">
                 <span className="preview-badge-status">
-                  {formData.cover_image_url.startsWith('data:') ? 'Local Image File Attached' : 'Image URL Attached'}
+                  {coverFile ? 'Image Ready to Upload' : 'Image URL Attached'}
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <label htmlFor="cover-file-change" className="btn btn-outline btn-xs" style={{ cursor: 'pointer' }}>
@@ -396,7 +388,13 @@ export default function CreateEditEventPage() {
             className="btn btn-primary"
             disabled={submitting}
           >
-            {submitting ? 'Saving...' : isEditing ? 'Update Event' : 'Create Event'}
+            {submitting
+              ? uploadingImage
+                ? 'Uploading Image...'
+                : 'Saving...'
+              : isEditing
+                ? 'Update Event'
+                : 'Create Event'}
           </button>
         </div>
       </form>

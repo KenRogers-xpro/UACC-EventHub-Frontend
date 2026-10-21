@@ -71,6 +71,16 @@ export const eventsAPI = {
     const res = await apiClient.post('/events', eventData);
     return res.data;
   },
+  uploadCoverImage: async (file) => {
+    const formData = new FormData();
+    formData.append('cover_image', file);
+    const res = await apiClient.post('/events/cover-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
   update: async (eventId, eventData) => {
     const res = await apiClient.put(`/events/${eventId}`, eventData);
     return res.data;
