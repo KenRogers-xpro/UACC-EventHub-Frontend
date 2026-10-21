@@ -1273,365 +1273,1485 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   padding-top: 1rem;
 }
 
-/* VIP Guest Invitation Portal */
-.invite-page-container {
+/* ==========================================================================
+   VIP GUEST INVITATION PORTAL (FULL-SCREEN RESPONSIVE REDESIGN)
+   Inspired by Ceremonial Thanksgiving & High-Level Protocol Experience
+   ========================================================================== */
+
+:root {
+  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-lemon: 'LEMON MILK', 'Lemon Milk', 'Montserrat', 'Outfit', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --gold-ceremony: #E0A93B;
+  --gold-glow: rgba(224, 169, 59, 0.25);
+  --uacc-red: #DC2626;
+  --uacc-red-dark: #991B1B;
+  --bg-obsidian: #080B11;
+  --bg-obsidian-card: rgba(17, 23, 34, 0.7);
+}
+
+.invite-fullscreen-page {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-black);
+  width: 100%;
+  background-color: var(--bg-obsidian);
+  color: #E2E8F0;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  position: relative;
 }
 
-.invite-brand-bar {
-  background: var(--bg-surface);
-  padding: 1rem 2.5rem;
+/* 1. TOP PROTOCOL BAR */
+.invite-top-nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(8, 11, 17, 0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
 }
 
-.invite-brand-content {
-  max-width: 1000px;
+.top-nav-container {
+  max-width: 1440px;
   margin: 0 auto;
+  padding: 0.85rem 2.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.brand-logo-pill {
+.top-nav-brand {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.9rem;
 }
 
-.pill-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.pill-title {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--text-white);
-  letter-spacing: 0.05em;
-}
-
-.pill-sub {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.security-badge {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  background: var(--bg-surface-elevated);
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-sm);
-}
-
-.invite-main-wrapper {
-  flex: 1;
-  padding: 3rem 2rem 5rem;
-  max-width: 960px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.invitation-card {
-  background: var(--bg-surface);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-}
-
-.invite-cover-header {
-  height: 260px;
-  background-size: cover;
-  background-position: center;
-  background-color: #121214;
-  padding: 2.25rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.invite-cover-badge {
-  display: inline-block;
-  background: rgba(0, 0, 0, 0.8);
-  color: var(--red-primary);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-sm);
-  width: fit-content;
-  margin-bottom: 0.75rem;
-}
-
-.invite-event-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--text-white);
-  line-height: 1.25;
-}
-
-.invitation-card-body {
-  padding: 2.5rem;
-}
-
-.guest-salutation-box {
-  padding-bottom: 1.75rem;
-  margin-bottom: 1.75rem;
-}
-
-.salutation-prefix {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  color: var(--red-primary);
-  letter-spacing: 0.1em;
-  font-weight: 700;
-}
-
-.guest-salutation-name {
-  font-size: 1.85rem;
-  font-weight: 700;
-  color: var(--text-white);
-  margin-top: 0.25rem;
-}
-
-.salutation-note {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin-top: 0.45rem;
-}
-
-.invite-description-box {
-  background: var(--bg-surface-elevated);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  margin-bottom: 1.75rem;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.invite-details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.85rem;
-  margin-bottom: 2rem;
-}
-
-.invite-detail-card {
-  background: var(--bg-surface-elevated);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.detail-label {
-  display: block;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
-
-.detail-val {
-  color: var(--text-white);
-  font-size: 0.95rem;
-}
-
-/* Countdown */
-.rsvp-countdown-container {
-  background: var(--bg-surface-elevated);
-  border-radius: var(--radius-lg);
-  padding: 1.75rem;
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.countdown-title {
-  display: block;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.countdown-digits-row {
+.brand-crest {
+  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
 }
 
-.digit-card {
-  background: var(--bg-black);
-  border-radius: var(--radius-md);
-  padding: 0.85rem 1.25rem;
-  min-width: 76px;
+.crest-initials {
+  font-family: var(--font-lemon);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #FFFFFF;
+}
+
+.brand-titles {
   display: flex;
   flex-direction: column;
 }
 
-.digit-num {
-  font-family: var(--font-mono);
-  font-size: 1.85rem;
+.brand-company {
+  font-family: var(--font-lemon);
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-white);
-  line-height: 1;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
 }
 
-.digit-label {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-top: 0.35rem;
+.brand-sub {
+  font-family: var(--font-lemon);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #94A3B8;
 }
 
-.digit-sep {
-  font-family: var(--font-mono);
-  font-size: 1.85rem;
-  color: var(--red-primary);
-}
-
-.deadline-passed-text {
-  color: #EF4444;
-  font-size: 0.95rem;
-}
-
-/* RSVP Buttons */
-.rsvp-action-section {
-  margin-bottom: 2rem;
-}
-
-.rsvp-prompt {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.buttons-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.top-nav-actions {
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
-.btn-rsvp-accept {
-  background: var(--red-primary);
+.ref-token-pill {
+  font-family: var(--font-lemon);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: #CBD5E1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.nav-rsvp-pill {
+  font-family: var(--font-lemon);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
   color: #FFFFFF;
-  padding: 1.1rem;
-  font-size: 1rem;
-  font-weight: 700;
-  border-radius: var(--radius-md);
-  cursor: pointer;
+  background: var(--uacc-red);
+  padding: 0.45rem 1.15rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
 }
 
-.btn-rsvp-accept:hover:not(:disabled) {
-  background: var(--red-hover);
+.nav-rsvp-pill:hover {
+  background: #B91C1C;
+  transform: translateY(-1px);
 }
 
-.btn-rsvp-decline {
-  background: var(--bg-surface-elevated);
-  color: var(--text-muted);
-  padding: 1.1rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  cursor: pointer;
+/* 2. GRAND FULL-SCREEN HERO SECTION */
+.grand-hero-section {
+  min-height: 90vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem 2.5rem 3.5rem;
+  overflow: hidden;
 }
 
-.btn-rsvp-decline:hover:not(:disabled) {
-  color: var(--text-white);
-  background: var(--bg-surface-hover);
+.hero-ambient-glow {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.14) 0%, rgba(224, 169, 59, 0.08) 50%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
 }
 
-.status-banner {
-  padding: 1.5rem;
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface-elevated);
+.hero-grid-container {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 4.5rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
-.status-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-  color: var(--text-white);
+.hero-content-column {
+  display: flex;
+  flex-direction: column;
 }
 
-.status-desc {
-  font-size: 0.92rem;
-  color: var(--text-secondary);
-}
-
-/* Guest Materials */
-.guest-materials-section {
-  background: var(--bg-surface-elevated);
-  border-radius: var(--radius-lg);
-  padding: 1.75rem;
-  margin-top: 2rem;
-}
-
-.materials-header {
+.hero-kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1.25rem;
 }
 
-.materials-title {
-  font-size: 1.15rem;
-  color: var(--text-white);
+.kicker-line {
+  width: 32px;
+  height: 2px;
+  background: var(--uacc-red);
 }
 
-.materials-subtitle {
+.hero-kicker-text {
+  font-family: var(--font-lemon);
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  color: #EF4444;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hero-event-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
+  font-weight: 600;
+  line-height: 1.12;
+  color: #FFFFFF;
+  margin: 0 0 1.75rem;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-honour-strip {
+  margin-bottom: 1.5rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--gold-ceremony);
+}
+
+.honour-label {
+  display: block;
+  font-family: var(--font-lemon);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  color: var(--gold-ceremony);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.hero-guest-salutation {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.salutation-prefix {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-style: italic;
+  color: #94A3B8;
+}
+
+.salutation-name {
+  font-family: var(--font-serif);
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.hero-invitation-message {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #CBD5E1;
+  max-width: 620px;
+  margin-bottom: 2.25rem;
+}
+
+.hero-invitation-message strong {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.hero-action-row {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.hero-btn-primary {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  color: #FFFFFF;
+  font-family: var(--font-lemon);
   font-size: 0.82rem;
-  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1.05rem 2.2rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.45);
+  display: inline-flex;
+  align-items: center;
 }
 
-.guest-materials-list {
+.hero-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -4px rgba(220, 38, 38, 0.6);
+}
+
+.hero-btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: #F1F5F9;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-family: var(--font-lemon);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1.05rem 2rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hero-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.hero-meta-bar {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.92rem;
+  color: #94A3B8;
+}
+
+.meta-item svg {
+  color: var(--gold-ceremony);
+  flex-shrink: 0;
+}
+
+.meta-venue-truncate {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* HERO VISUAL COLUMN: SEAMLESS IMAGE BLEND WITHOUT BORDERS */
+.hero-visual-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-image-blend-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-blend-frame {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  border-radius: 32px;
+  overflow: hidden;
+  /* NO borders! Natural blend into dark canvas with radial mask */
+  border: none !important;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 60px rgba(220, 38, 38, 0.12);
+  mask-image: radial-gradient(ellipse 95% 95% at 50% 50%, black 70%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 95% 95% at 50% 50%, black 70%, transparent 100%);
+}
+
+.hero-borderless-image {
+  width: 100%;
+  height: auto;
+  max-height: 580px;
+  object-fit: cover;
+  display: block;
+  filter: contrast(106%) saturate(108%);
+  transition: transform 0.6s ease;
+}
+
+.hero-borderless-image:hover {
+  transform: scale(1.02);
+}
+
+.hero-image-soft-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 40%, rgba(8, 11, 17, 0.75) 100%),
+              radial-gradient(circle at 50% 100%, rgba(220, 38, 38, 0.2) 0%, transparent 60%);
+}
+
+.hero-default-crest-visual {
+  width: 100%;
+  max-width: 480px;
+  min-height: 440px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-.guest-material-card {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.45) 0%, rgba(8, 11, 17, 0.95) 75%);
+  border-radius: 32px;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }
 
-.material-left {
+.crest-symbol {
+  font-family: var(--font-lemon);
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF 0%, #E0A93B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.crest-caption {
+  font-family: var(--font-lemon);
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  color: #E0A93B;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.crest-motto {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #94A3B8;
+}
+
+/* Scroll Cue */
+.hero-scroll-cue {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 1.5rem auto 0;
+  text-decoration: none;
+  font-family: var(--font-lemon);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #64748B;
+  transition: color 0.2s ease;
+  z-index: 2;
+}
+
+.hero-scroll-cue:hover {
+  color: var(--gold-ceremony);
+}
+
+.scroll-chevron {
+  font-size: 1.1rem;
+  animation: bounceDown 2s infinite;
+}
+
+@keyframes bounceDown {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(6px); }
+  60% { transform: translateY(3px); }
+}
+
+/* 3. GRAND COUNTDOWN SECTION */
+.grand-countdown-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(180deg, #080B11 0%, #0D131E 50%, #080B11 100%);
+  border-top: 1px solid rgba(224, 169, 59, 0.15);
+  border-bottom: 1px solid rgba(224, 169, 59, 0.15);
+  position: relative;
+}
+
+.countdown-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ornament-divider {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 0 auto 1.5rem;
+  max-width: 260px;
+  opacity: 0.85;
 }
 
-.file-title {
+.orn-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-ceremony), transparent);
+}
+
+.orn-diamond {
+  color: var(--gold-ceremony);
+  font-size: 0.85rem;
+}
+
+.countdown-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(1.85rem, 3.4vw, 2.75rem);
+  font-weight: 500;
+  color: #FFFFFF;
+  margin-bottom: 2.25rem;
+}
+
+.countdown-tiles-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.timer-tile {
+  background: rgba(18, 25, 40, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(224, 169, 59, 0.28);
+  border-radius: 20px;
+  padding: 1.25rem 1.6rem;
+  min-width: 105px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.timer-num {
+  font-family: var(--font-lemon);
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.timer-tag {
+  font-family: var(--font-lemon);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-ceremony);
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.timer-colon {
+  font-family: var(--font-lemon);
+  font-size: 2.6rem;
+  color: var(--gold-ceremony);
+  line-height: 1;
+  margin: 0 -0.25rem;
+}
+
+.countdown-passed-banner {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--gold-ceremony);
+  margin-bottom: 1.5rem;
+}
+
+.countdown-subtext {
+  font-size: 0.95rem;
+  color: #94A3B8;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.countdown-subtext strong {
+  color: #E2E8F0;
+}
+
+/* 4. EVENT DETAILS SECTION */
+.grand-details-section {
+  padding: 6rem 2.5rem;
+  position: relative;
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-container.narrow {
+  max-width: 860px;
+}
+
+.section-container.center {
+  text-align: center;
+}
+
+.section-header-center {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.section-mini-kicker {
   display: block;
+  font-family: var(--font-lemon);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--gold-ceremony);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.section-title-serif {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.event-narrative-card {
+  background: rgba(18, 24, 38, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 2.5rem 3rem;
+  margin-bottom: 3rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.narrative-body {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #CBD5E1;
+  white-space: pre-line;
+}
+
+.details-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.detail-glass-card {
+  background: rgba(18, 24, 38, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 2rem 1.75rem;
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.detail-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(224, 169, 59, 0.35);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(224, 169, 59, 0.1);
+}
+
+.card-icon-bubble {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: rgba(220, 38, 38, 0.12);
+  color: #EF4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-family: var(--font-lemon);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.info-value {
+  font-size: 1.05rem;
+  color: #FFFFFF;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.card-directions-link {
+  display: inline-block;
+  font-family: var(--font-lemon);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-ceremony);
+  margin-top: 0.65rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.card-directions-link:hover {
+  color: #F5CF7B;
+}
+
+/* 5. RSVP RESPONSE SECTION */
+.grand-rsvp-section {
+  padding: 6rem 2.5rem;
+  background: radial-gradient(circle at 50% 30%, rgba(220, 38, 38, 0.08) 0%, transparent 65%),
+              linear-gradient(180deg, #080B11 0%, #0F141F 50%, #080B11 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rsvp-lead-sub {
+  font-size: 1.05rem;
+  color: #CBD5E1;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.rsvp-deadline-sub {
+  font-size: 0.88rem;
+  color: #94A3B8;
+  margin: 0.25rem 0 0;
+}
+
+.rsvp-deadline-sub strong {
+  color: var(--gold-ceremony);
+}
+
+.rsvp-interactive-card {
+  background: rgba(18, 24, 38, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(224, 169, 59, 0.25);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7), 0 0 50px rgba(220, 38, 38, 0.08);
+}
+
+.rsvp-error-banner {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #FCA5A5;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
   font-size: 0.92rem;
-  color: var(--text-white);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.rsvp-options-prompt {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 1.75rem;
   font-weight: 500;
 }
 
-.file-meta {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-muted);
+.rsvp-choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
 }
 
-.invite-card-footer {
-  background: var(--bg-surface-elevated);
-  padding: 1.25rem;
+.rsvp-choice-card {
+  padding: 2.25rem 1.5rem;
+  border-radius: 22px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
+  border: 2px solid transparent;
+  outline: none;
+}
+
+.choice-accept {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #FFFFFF;
+}
+
+.choice-accept:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.22);
+  border-color: var(--uacc-red);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px -5px rgba(220, 38, 38, 0.4);
+}
+
+.choice-decline {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+}
+
+.choice-decline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  transform: translateY(-3px);
+}
+
+.choice-icon {
+  font-size: 1.85rem;
+  margin-bottom: 0.65rem;
+  line-height: 1;
+}
+
+.choice-title {
+  font-family: var(--font-lemon);
+  font-size: 0.92rem;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.choice-subtitle {
+  font-size: 0.82rem;
+  opacity: 0.75;
+}
+
+.rsvp-submitting-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  color: #94A3B8;
+  font-size: 0.9rem;
+}
+
+.small-inline-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--uacc-red);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Status Hero Banners */
+.status-hero-banner {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+}
+
+.status-accepted-hero {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.status-declined-hero {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.status-tick-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #10B981;
+  color: #FFFFFF;
+  font-size: 1.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+}
+
+.status-cross-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 1.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+}
+
+.status-hero-title {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.status-hero-text {
+  font-size: 1rem;
+  color: #CBD5E1;
+  max-width: 520px;
+  margin: 0 auto 1.75rem;
+  line-height: 1.6;
+}
+
+.status-action-row {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-status-change,
+.btn-status-change-accept {
+  font-family: var(--font-lemon);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.4rem;
+  border-radius: 9999px;
+  background: transparent;
+  color: #94A3B8;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-status-change:hover {
+  color: #EF4444;
+  border-color: #EF4444;
+}
+
+.btn-status-change-accept:hover {
+  color: #10B981;
+  border-color: #10B981;
+}
+
+/* 6. CALENDAR SECTION */
+.grand-calendar-section {
+  padding: 5rem 2.5rem;
+}
+
+.calendar-sub {
+  font-size: 1rem;
+  color: #94A3B8;
+  margin-top: 0.5rem;
+}
+
+.calendar-buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.calendar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-lemon);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.8rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.calendar-google-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.calendar-google-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.calendar-ics-btn {
+  background: rgba(224, 169, 59, 0.08);
+  color: var(--gold-ceremony);
+  border: 1px solid rgba(224, 169, 59, 0.3);
+}
+
+.calendar-ics-btn:hover {
+  background: rgba(224, 169, 59, 0.18);
+  border-color: var(--gold-ceremony);
+  transform: translateY(-2px);
+}
+
+/* 7. OFFICIAL EVENT MATERIALS SECTION */
+.grand-materials-section {
+  padding: 5rem 2.5rem;
+  background: rgba(18, 24, 38, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.materials-lead-sub {
+  font-size: 0.95rem;
+  color: #94A3B8;
+  margin-top: 0.5rem;
+}
+
+.materials-loading-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 0;
+  color: #94A3B8;
+  font-size: 0.9rem;
+}
+
+.no-materials-glass {
+  background: rgba(18, 24, 38, 0.5);
+  border-radius: 18px;
+  padding: 2.5rem;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 0.92rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.materials-refined-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 2.5rem auto 0;
+}
+
+.refined-material-card {
+  background: rgba(18, 24, 38, 0.65);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1.25rem 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.25rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.refined-material-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(224, 169, 59, 0.35);
+}
+
+.material-file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.file-format-badge {
+  font-family: var(--font-lemon);
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(220, 38, 38, 0.15);
+  color: #EF4444;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.material-title {
+  display: block;
+  font-size: 0.98rem;
+  color: #FFFFFF;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.material-meta-sub {
+  font-size: 0.78rem;
+  color: #94A3B8;
+}
+
+.btn-material-download {
+  font-family: var(--font-lemon);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-ceremony);
+  background: rgba(224, 169, 59, 0.08);
+  border: 1px solid rgba(224, 169, 59, 0.25);
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-material-download:hover {
+  background: var(--gold-ceremony);
+  color: #080B11;
+}
+
+/* 8. PROTOCOL DESK / CONTACT SECTION */
+.grand-contact-section {
+  padding: 5rem 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.contact-lead-sub {
+  font-size: 0.95rem;
+  color: #94A3B8;
+  max-width: 650px;
+  margin: 0.5rem auto 0;
+  line-height: 1.6;
+}
+
+.contact-desk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 750px;
+  margin: 2.5rem auto 0;
+}
+
+.contact-card {
+  background: rgba(18, 24, 38, 0.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact-role {
+  font-family: var(--font-lemon);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #94A3B8;
+  margin-bottom: 0.4rem;
+}
+
+.contact-name {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: #FFFFFF;
+  margin-bottom: 0.75rem;
+}
+
+.contact-link {
+  font-family: var(--font-lemon);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--gold-ceremony);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-link:hover {
+  color: #F5CF7B;
+}
+
+/* 9. REFINED PROTOCOL FOOTER */
+.grand-protocol-footer {
+  padding: 4rem 2rem 3rem;
+  background: #05070B;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+.footer-national-strip {
+  display: flex;
+  height: 3px;
+  width: 140px;
+  margin: 0 auto 2rem;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.strip-segment {
+  flex: 1;
+  height: 100%;
+}
+
+.strip-black { background: #000000; }
+.strip-yellow { background: #FACC15; }
+.strip-red { background: #DC2626; }
+
+.footer-content-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-brand {
+  font-family: var(--font-lemon);
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.footer-copyright {
+  font-size: 0.78rem;
+  color: #64748B;
+  margin-bottom: 0.75rem;
+}
+
+.footer-confidentiality {
+  font-size: 0.72rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* 10. FLOATING WHATSAPP CHAT BUTTON */
+.floating-protocol-chat {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 99;
+  background: #25D366;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.35rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+  text-decoration: none;
+  font-family: var(--font-lemon);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.floating-protocol-chat:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 14px 35px rgba(37, 211, 102, 0.6);
+}
+
+/* FULLSCREEN LOADING & ERROR STATES */
+.invite-full-screen-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-obsidian);
+  padding: 2rem;
+}
+
+.invite-loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.invite-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(220, 38, 38, 0.15);
+  border-top-color: var(--uacc-red);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.loading-kicker {
+  font-family: var(--font-lemon);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  color: var(--gold-ceremony);
+}
+
+.loading-text {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: #CBD5E1;
+}
+
+.invite-error-glass {
+  background: rgba(18, 24, 38, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 28px;
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+.error-seal {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: var(--uacc-red);
+  color: #FFFFFF;
+  font-family: var(--font-lemon);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.error-title {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  color: #FFFFFF;
+  margin-bottom: 0.75rem;
+}
+
+.error-desc {
+  font-size: 1rem;
+  color: #CBD5E1;
+  line-height: 1.6;
+}
+
+.error-divider {
+  width: 60px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 1.5rem auto;
+}
+
+.error-footnote {
+  font-size: 0.8rem;
+  color: #64748B;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM
+   Full screen utilization from mobile (360px) to ultra-wide (2560px)
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .hero-grid-container {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+    text-align: center;
+  }
+
+  .hero-content-column {
+    align-items: center;
+  }
+
+  .hero-honour-strip {
+    border-left: none;
+    border-top: 2px solid var(--gold-ceremony);
+    padding-left: 0;
+    padding-top: 1rem;
+    width: 100%;
+  }
+
+  .hero-guest-salutation {
+    justify-content: center;
+  }
+
+  .hero-action-row {
+    justify-content: center;
+  }
+
+  .hero-meta-bar {
+    justify-content: center;
+  }
+
+  .hero-blend-frame {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-nav-container {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .grand-hero-section {
+    padding: 2.5rem 1.25rem 2.5rem;
+  }
+
+  .hero-event-title {
+    font-size: clamp(2.2rem, 8vw, 3rem);
+  }
+
+  .hero-invitation-message {
+    font-size: 0.98rem;
+  }
+
+  .hero-action-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .countdown-tiles-row {
+    gap: 0.65rem;
+  }
+
+  .timer-tile {
+    min-width: 72px;
+    padding: 0.85rem 0.65rem;
+  }
+
+  .timer-num {
+    font-size: 1.85rem;
+  }
+
+  .timer-colon {
+    font-size: 1.75rem;
+  }
+
+  .timer-tag {
+    font-size: 0.62rem;
+  }
+
+  .grand-details-section,
+  .grand-rsvp-section,
+  .grand-calendar-section,
+  .grand-materials-section,
+  .grand-contact-section {
+    padding: 4rem 1.25rem;
+  }
+
+  .rsvp-interactive-card {
+    padding: 2rem 1.25rem;
+  }
+
+  .rsvp-choices-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .floating-protocol-chat {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    padding: 0.75rem 1.15rem;
+  }
+
+  .floating-protocol-chat .chat-label {
+    display: none;
+  }
 }
 
 /* Utility */
@@ -2032,100 +3152,6 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 
   .material-name {
     font-size: 0.88rem;
-  }
-
-  /* VIP Guest Invite Page */
-  .invite-main-wrapper {
-    padding: 1rem 0.75rem 3rem;
-  }
-
-  .invitation-card {
-    border-radius: var(--radius-lg);
-  }
-
-  .invite-cover-header {
-    height: 180px;
-    padding: 1.25rem;
-  }
-
-  .invite-event-title {
-    font-size: clamp(1.3rem, 4.5vw, 1.85rem);
-  }
-
-  .invitation-card-body {
-    padding: 1.25rem;
-  }
-
-  .guest-salutation-name {
-    font-size: clamp(1.25rem, 4.5vw, 1.6rem);
-  }
-
-  .salutation-note {
-    font-size: 0.88rem;
-  }
-
-  .invite-details-grid {
-    grid-template-columns: 1fr;
-    gap: 0.65rem;
-  }
-
-  .invite-detail-card {
-    padding: 0.85rem 1.15rem;
-  }
-
-  .rsvp-countdown-container {
-    padding: 1.25rem 1rem;
-  }
-
-  .countdown-digits-row {
-    gap: 0.4rem;
-  }
-
-  .digit-card {
-    min-width: 54px;
-    padding: 0.65rem 0.4rem;
-  }
-
-  .digit-num {
-    font-size: 1.35rem;
-  }
-
-  .digit-sep {
-    font-size: 1.25rem;
-  }
-
-  .digit-label {
-    font-size: 0.62rem;
-  }
-
-  .btn-rsvp-accept,
-  .btn-rsvp-decline {
-    padding: 0.95rem;
-    font-size: 0.92rem;
-  }
-
-  .guest-materials-section {
-    padding: 1.25rem;
-  }
-
-  .guest-material-card {
-    padding: 0.85rem 1rem;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-  }
-
-  .guest-material-card .material-left {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .guest-material-card .file-title {
-    word-break: break-word;
-  }
-
-  .guest-material-card .btn {
-    width: 100%;
-    justify-content: center;
   }
 
   /* Login Card */
